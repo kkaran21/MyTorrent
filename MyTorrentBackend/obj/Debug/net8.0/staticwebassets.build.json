@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "6IIJbL3Wkaowa+FmaJN/tFbwbqnj91uvSy3n9rsYSBw=",
+  "Source": "MyTorrentBackend",
+  "BasePath": "_content/MyTorrentBackend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

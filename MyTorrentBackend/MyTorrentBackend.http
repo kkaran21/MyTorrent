@@ -1,0 +1,6 @@
+@MyTorrentBackend_HostAddress = http://localhost:5027
+
+GET {{MyTorrentBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
