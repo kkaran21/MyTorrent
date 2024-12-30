@@ -4,10 +4,10 @@ namespace MyTorrentBackend.Utils;
 
 public class BencodeParser
 {
-    private Stream Stream;
-    public BencodeParser(Stream stream)
+    private Byte[] ByteArr;
+    public BencodeParser(Byte[] ByteArr)
     {
-        Stream = stream;
+        this.ByteArr = ByteArr;
     }
 
     public TorrentFile ParseTorrent()
