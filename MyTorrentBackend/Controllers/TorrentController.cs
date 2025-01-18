@@ -22,10 +22,10 @@ public class TorrentController : ControllerBase
                 offset += bytesRead;
             }
 
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(allBytes, 0, allBytes.Length));
-
-
+            // Console.WriteLine((char)allBytes[0]);
+            // Console.WriteLine(System.Text.Encoding.UTF8.GetString(allBytes, 0, allBytes.Length));
             BencodeParser parser = new BencodeParser(allBytes);
+            var a = parser.parse();
 
         }
         catch (Exception e)

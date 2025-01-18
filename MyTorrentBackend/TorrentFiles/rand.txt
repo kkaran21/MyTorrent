@@ -1,0 +1,1 @@
+d8:announce41:http://bttracker.debian.org:6969/announce7:comment35:"Debian CD from cdimage.debian.org"10:created by13:mktorrent 1.113:creation datei1731156219e4:infod6:lengthi661651456e4:name31:debian-12.8.0-amd64-netinst.iso12:piece lengthi262144e6:pieces50480:E
