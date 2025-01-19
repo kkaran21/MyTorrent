@@ -8,7 +8,7 @@ namespace MyTorrentBackend.Controllers;
 public class TorrentController : ControllerBase
 {
     [HttpPost]
-    public void download([FromFormAttribute] IFormFile torrentFile)
+    public IActionResult download([FromFormAttribute] IFormFile torrentFile)
     {
         try
         {
@@ -22,15 +22,15 @@ public class TorrentController : ControllerBase
                 offset += bytesRead;
             }
 
-            // Console.WriteLine((char)allBytes[0]);
-            // Console.WriteLine(System.Text.Encoding.UTF8.GetString(allBytes, 0, allBytes.Length));
+            //Console.WriteLine(System.Text.Encoding.UTF8.GetString(allBytes, 0, allBytes.Length));
             BencodeParser parser = new BencodeParser(allBytes);
             var a = parser.parse();
 
+            return Ok(a);
         }
         catch (Exception e)
         {
-
+             return BadRequest("Error processing torrent file.");
         }
     }
 

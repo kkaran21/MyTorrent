@@ -1,5 +1,4 @@
 using System.Text;
-using MyTorrentBackend.Dtos;
 
 namespace MyTorrentBackend.Utils;
 
@@ -80,7 +79,6 @@ public class BencodeParser
         consume('l');
         while (peek() != 'e')
         {
-
             list.Add(parse());
         }
         consume('e');
@@ -94,9 +92,28 @@ public class BencodeParser
         consume('d');
         while (peek() != 'e')
         {
-            dict.Add(parseString(), parse());
+            string key = parseString();
+            object value = key == "pieces" ? parsePieces() : parse();
+            dict[key] = value;
         }
         consume('e');
         return dict;
+    }
+
+    private object parsePieces()
+    {
+
+        string resStr = string.Empty;
+        string strLen = string.Empty;
+        int strSize;
+        int endPositon = Array.IndexOf(_data, (byte)':', _position);
+        strLen = Encoding.ASCII.GetString(_data, _position, endPositon - _position);
+        _position += endPositon - _position;
+        int.TryParse(strLen, out strSize);
+        consume(':');
+        byte[] pieceArr = new byte[strSize];
+        Array.Copy(_data, _position, pieceArr, 0, strSize);
+        _position += strSize;
+        return pieceArr;
     }
 }
