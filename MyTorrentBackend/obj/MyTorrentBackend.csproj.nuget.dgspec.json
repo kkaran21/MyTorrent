@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {}
+    "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {
+    "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+        "projectUniqueName": "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
         "projectName": "MyTorrentBackend",
-        "projectPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+        "projectPath": "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
         "packagesPath": "C:\\Users\\khadk\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
+        "outputPath": "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\khadk\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -46,6 +46,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"

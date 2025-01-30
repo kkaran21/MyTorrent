@@ -31,3 +31,4 @@ C:\Users\khadk\OneDrive\Desktop\MyTorrent\MyTorrentBackend\obj\Debug\net8.0\MyTo
 C:\Users\khadk\OneDrive\Desktop\MyTorrent\MyTorrentBackend\obj\Debug\net8.0\MyTorrentBackend.genruntimeconfig.cache
 C:\Users\khadk\OneDrive\Desktop\MyTorrent\MyTorrentBackend\obj\Debug\net8.0\ref\MyTorrentBackend.dll
 C:\Users\khadk\OneDrive\Desktop\MyTorrent\MyTorrentBackend\obj\Debug\net8.0\MyTorrentBackend.sourcelink.json
+c:\Users\khadk\OneDrive\Desktop\MyTorrent\MyTorrentBackend\bin\Debug\net8.0\AutoMapper.dll

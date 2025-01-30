@@ -1,4 +1,6 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MyTorrentBackend.Dtos;
 using MyTorrentBackend.Utils;
 
 namespace MyTorrentBackend.Controllers;
@@ -7,6 +9,12 @@ namespace MyTorrentBackend.Controllers;
 [Route("[controller]/[action]")]
 public class TorrentController : ControllerBase
 {
+    private readonly IMapper _mapper;
+
+    public TorrentController(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
     [HttpPost]
     public IActionResult download([FromFormAttribute] IFormFile torrentFile)
     {
@@ -21,16 +29,13 @@ public class TorrentController : ControllerBase
             {
                 offset += bytesRead;
             }
-
-            //Console.WriteLine(System.Text.Encoding.UTF8.GetString(allBytes, 0, allBytes.Length));
             BencodeParser parser = new BencodeParser(allBytes);
-            var a = parser.parse();
-
-            return Ok(a);
+            var parsedTrnt = (Dictionary<string, object>)parser.parse();
+            return Ok(_mapper.Map<TorrentFile>(parsedTrnt));
         }
         catch (Exception e)
         {
-             return BadRequest("Error processing torrent file.");
+            return BadRequest("Error processing torrent file.");
         }
     }
 
