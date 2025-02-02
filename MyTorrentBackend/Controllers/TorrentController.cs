@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MyTorrentBackend.Dtos;
+using MyTorrentBackend.Services;
 using MyTorrentBackend.Utils;
 
 namespace MyTorrentBackend.Controllers;
@@ -30,8 +31,13 @@ public class TorrentController : ControllerBase
                 offset += bytesRead;
             }
             BencodeParser parser = new BencodeParser(allBytes);
-            var parsedTrnt = (Dictionary<string, object>)parser.parse();
-            return Ok(_mapper.Map<TorrentFile>(parsedTrnt));
+            var parsedTrnt = parser.parse();
+
+            DownloaderFactory downloaderFactory = new DownloaderFactory();
+            TorrentFile file = _mapper.Map<TorrentFile>((Dictionary<string, object>)parsedTrnt);
+            IDownloader downloader = downloaderFactory.GetDownloader(file);
+            downloader.Download();
+            return Ok(_mapper.Map<TorrentFile>((Dictionary<string, object>)parsedTrnt));
         }
         catch (Exception e)
         {

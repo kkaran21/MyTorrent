@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 
 namespace MyTorrentBackend.Utils;
@@ -106,14 +105,14 @@ public class BencodeParser
             if (key == "info")
             {
                 _isInfoHashDict = true;
+                _infoHashEndPosition = _position;
             }
         }
-        _infoHashEndPosition = _position;
         if (_isInfoHashDict)
         {
             byte[] infoDictBytes = new byte[_infoHashEndPosition - _infoHashStartPosition];
             Array.Copy(_data, _infoHashStartPosition, infoDictBytes, 0, _infoHashEndPosition - _infoHashStartPosition);
-            var hash = SHA1.HashData(infoDictBytes);
+            var hash = System.Security.Cryptography.SHA1.HashData(infoDictBytes);
             dict["info hash"] = hash;
             _isInfoHashDict = false;
         }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {}
+    "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {}
   },
   "projects": {
-    "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {
+    "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+        "projectUniqueName": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
         "projectName": "MyTorrentBackend",
-        "projectPath": "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+        "projectPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
         "packagesPath": "C:\\Users\\khadk\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
+        "outputPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\khadk\\AppData\\Roaming\\NuGet\\NuGet.Config",
