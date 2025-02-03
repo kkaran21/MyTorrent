@@ -14,14 +14,7 @@ namespace MyTorrentBackend.Services
 
         public async Task Download()
         {
-            List<Task> tasks = new List<Task>();
-            tasks.Add(GetPeers(_torrentFile.Announce));
-            foreach (var item in _torrentFile.AnnounceList.Take(3).ToList())
-            {
-                tasks.Add(GetPeers(item[0]));
-            }
-
-            await Task.WhenAll(tasks);
+            await GetPeers(_torrentFile.Announce);
             return;
         }
 

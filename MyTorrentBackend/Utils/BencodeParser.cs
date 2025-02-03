@@ -100,8 +100,24 @@ public class BencodeParser
         while (peek() != 'e')
         {
             string key = parseString();
-            object value = key == "pieces" ? parsePieces() : parse();
+
+            object value;
+
+            switch (key)
+            {
+                case "pieces":
+                    value = parseBinaryBlob(20);
+                    break;
+                case "peers":
+                    value = parsePeersAsString(parseBinaryBlob(6));
+                    break;
+                default:
+                    value = parse();
+                    break;
+            }
+
             dict[key] = value;
+
             if (key == "info")
             {
                 _isInfoHashDict = true;
@@ -120,9 +136,20 @@ public class BencodeParser
         return dict;
     }
 
-    private object parsePieces()
+    private List<string> parsePeersAsString(List<byte[]> peersBytes)
     {
+        List<string> peersString = new List<string>();
+        foreach (var item in peersBytes)
+        {
+            int portNo = item[4] << 8 | item[5];
+            string ip = $"{item[0]}.{item[1]}.{item[4]}.{item[3]}:{portNo}";
+            peersString.Add(ip);
+        }
+        return peersString;
+    }
 
+    private List<byte[]> parseBinaryBlob(int BlobSize)
+    {
         string resStr = string.Empty;
         string strLen = string.Empty;
         int strSize;
@@ -132,28 +159,26 @@ public class BencodeParser
         int.TryParse(strLen, out strSize);
         consume(':');
 
-        byte[] pieceArr = new byte[strSize];
-        Array.Copy(_data, _position, pieceArr, 0, strSize);
+        byte[] Arr = new byte[strSize];
+        Array.Copy(_data, _position, Arr, 0, strSize);
         _position += strSize;
 
-        return getHashArr(pieceArr);
+        return getByteArrList(Arr, BlobSize);
     }
 
-    //convert pieces bytearray to list of 20 bytes array where each item
-    //in the list is hash a a piece 
-    private object getHashArr(byte[] pieceArr)
+    //Converts A ByteArray to a list of fixed size byte array
+    private List<byte[]> getByteArrList(byte[] Arr, int chunkSize)
     {
-        List<byte[]> hashArr = new List<byte[]>();
-        int chunkSize = 20;
+        List<byte[]> ArrOfChunk = new List<byte[]>();
 
-        for (int i = 0; i < pieceArr.Length; i += chunkSize)
+        for (int i = 0; i < Arr.Length; i += chunkSize)
         {
-            int length = Math.Min(chunkSize, pieceArr.Length - i);
-            byte[] hashChunk = new byte[20];
-            Array.Copy(pieceArr, i, hashChunk, 0, length);
-            hashArr.Add(hashChunk);
+            int length = Math.Min(chunkSize, Arr.Length - i);
+            byte[] Chunk = new byte[chunkSize];
+            Array.Copy(Arr, i, Chunk, 0, length);
+            ArrOfChunk.Add(Chunk);
         }
 
-        return hashArr;
+        return ArrOfChunk;
     }
 }
