@@ -1,11 +1,12 @@
 
+using AutoMapper;
 using MyTorrentBackend.Dtos;
 
 namespace MyTorrentBackend.Services
 {
     public class UdpDownloader : IDownloader
     {
-        public UdpDownloader(TorrentFile torrentFile)
+        public UdpDownloader(TorrentFile torrentFile, IMapper mapper)
         {
 
         }
@@ -15,7 +16,7 @@ namespace MyTorrentBackend.Services
             throw new NotImplementedException();
         }
 
-        public Task GetPeers(string AnnounnceUrls)
+        public Task<TrackerResponse> GetPeers(string AnnounnceUrls)
         {
             throw new NotImplementedException();
         }

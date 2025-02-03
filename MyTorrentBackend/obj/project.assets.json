@@ -624,19 +624,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\KARAN\\.nuget\\packages\\": {}
+    "C:\\Users\\khadk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\KARAN\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+      "projectUniqueName": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
       "projectName": "MyTorrentBackend",
-      "projectPath": "C:\\Users\\KARAN\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
-      "packagesPath": "C:\\Users\\KARAN\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\KARAN\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
+      "projectPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+      "packagesPath": "C:\\Users\\khadk\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\KARAN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\khadk\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -644,6 +644,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -695,7 +696,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
