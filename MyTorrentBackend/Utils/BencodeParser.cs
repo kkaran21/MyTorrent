@@ -142,7 +142,7 @@ public class BencodeParser
         foreach (var item in peersBytes)
         {
             int portNo = item[4] << 8 | item[5];
-            string ip = $"{item[0]}.{item[1]}.{item[4]}.{item[3]}:{portNo}";
+            string ip = $"{item[0]}.{item[1]}.{item[2]}.{item[3]}:{portNo}";
             peersString.Add(ip);
         }
         return peersString;
