@@ -35,7 +35,7 @@ public class TorrentController : ControllerBase
 
             DownloaderFactory downloaderFactory = new DownloaderFactory();
             TorrentFile file = _mapper.Map<TorrentFile>((Dictionary<string, object>)parsedTrnt);
-            IDownloader downloader = downloaderFactory.GetDownloader(file,_mapper);
+            IDownloader downloader = downloaderFactory.GetDownloader(file, _mapper);
             downloader.Download();
             return Ok(_mapper.Map<TorrentFile>((Dictionary<string, object>)parsedTrnt));
         }

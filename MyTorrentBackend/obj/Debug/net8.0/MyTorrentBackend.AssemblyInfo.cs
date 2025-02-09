@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MyTorrentBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a4665b3152f03f44d26940c1525b264433587f5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a9cdb7c359f24a42b0503c3f78959f9854b35be3")]
 [assembly: System.Reflection.AssemblyProductAttribute("MyTorrentBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MyTorrentBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

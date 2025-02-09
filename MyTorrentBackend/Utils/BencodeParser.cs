@@ -141,7 +141,7 @@ public class BencodeParser
         List<string> peersString = new List<string>();
         foreach (var item in peersBytes)
         {
-            int portNo = item[4] << 8 | item[5];
+            int portNo = item[4] << 8 | item[5]; //Squishing them together left shift by 8 bits and perform OR operataion
             string ip = $"{item[0]}.{item[1]}.{item[2]}.{item[3]}:{portNo}";
             peersString.Add(ip);
         }
