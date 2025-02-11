@@ -12,7 +12,8 @@ namespace MyTorrentBackend.Services
     {
         private TorrentFile _torrentFile;
         private IMapper _mapper;
-        private ConcurrentDictionary<int, byte[]> pieces;
+        private ConcurrentDictionary<int, byte[]> pieces = new ConcurrentDictionary<int, byte[]>();
+        private Dictionary<int, byte[]> Incompletepieces = new Dictionary<int, byte[]>();
         public TcpDownloader(TorrentFile torrentFile, IMapper mapper)
         {
             _torrentFile = torrentFile;
@@ -61,94 +62,22 @@ namespace MyTorrentBackend.Services
 
                 if (isHandshakeSuccess)
                 {
-                    await HandlePeerMessages(client,stream);
-                    // bool allPiecesDownloaded = true;
-                    // int peerRetry = 0;
-                    // BitArray bitArray = null;
-
-                    // while (client.Connected && allPiecesDownloaded && peerRetry < 3)
-                    // {
-                    //     byte[] lengthBuff = new byte[4];
-                    //     stream.Read(lengthBuff, 0, lengthBuff.Length);
-                    //     Array.Reverse(lengthBuff);
-                    //     int msgSize = BitConverter.ToInt32(lengthBuff);
-                    //     if (msgSize > 0)
-                    //     {
-                    //         byte[] msgBuff = new byte[msgSize];
-                    //         stream.Read(msgBuff, 0, msgBuff.Length);
-                    //         if (msgBuff[0] == (byte)MessageTypes.MsgBitfield)
-                    //         {
-
-                    //             bitArray = new BitArray(msgBuff.Skip(1).ToArray());
-                    //             byte[] InterestedMsg = [(byte)MessageTypes.MsgInterested];
-                    //             byte[] RequestBytes = BitConverter.GetBytes(InterestedMsg.Length)
-                    //                                     .Reverse() //to BigEndian Network Order
-                    //                                     .Concat(InterestedMsg)
-                    //                                     .ToArray();
-                    //             stream.Write(RequestBytes, 0, RequestBytes.Length);
-
-                    //         }
-                    //         else if (msgBuff[0] == (byte)MessageTypes.MsgUnchoke)
-                    //         {
-                    //             if (bitArray.Count > 0)
-                    //             {
-                    //                 for (int i = 0; i < bitArray.Count; i++)
-                    //                 {
-                    //                     if (bitArray[i] == true && !pieces.ContainsKey(i))
-                    //                     {
-                    //                         byte[] InterestedMsg = [(byte)MessageTypes.MsgRequest];
-                    //                         byte[] payload = InterestedMsg
-                    //                                                 .Concat(BitConverter.GetBytes(i).Reverse()) //to BigEndian Network Order
-                    //                                                 .Concat(BitConverter.GetBytes(0).Reverse())
-                    //                                                 .Concat(BitConverter.GetBytes(16384).Reverse())
-                    //                                                 .ToArray();
-
-                    //                         byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
-                    //                         stream.Write(RequestBytes, 0, RequestBytes.Length);
-                    //                         //break;
-
-                    //                         // Byte[] allBytes = new byte[_torrentFile.PieceLength];
-                    //                         // int bytesRead = 0;
-                    //                         // int offset = 16000;
-
-                    //                         // while ((bytesRead = stream.Read(allBytes, offset, allBytes.Length - offset)) > 0)
-                    //                         // {
-                    //                         //     offset += 16000;
-                    //                         // }
-                    //                     }
-                    //                 }
-                    //             }
-                    //             Console.WriteLine("we are unchocked");
-                    //         }
-                    //         else if (msgBuff[0] == (byte)MessageTypes.MsgPiece)
-                    //         {
-                    //             Console.WriteLine("Recieved Data");
-                    //         }
-                    //         else
-                    //         {
-                    //             peerRetry++;
-                    //         }
-                    //     }
-                    //     else
-                    //     {
-                    //         peerRetry++;
-                    //     }
-                    // }
+                    await HandlePeerMessages(client, stream);
                 }
 
             }
             // Timeout reached
-            catch (OperationCanceledException)
+            catch (OperationCanceledException e)
             {
                 // Do something in case of a timeout
             }
             // Network-related error
-            catch (SocketException)
+            catch (SocketException e)
             {
                 // Do something about other communication issues
             }
             // Some argument-related error, disposed object, ...
-            catch (Exception)
+            catch (Exception e)
             {
                 // Do something about other errors
             }
@@ -197,6 +126,7 @@ namespace MyTorrentBackend.Services
 
         private async Task HandlePeerMessages(TcpClient client, NetworkStream stream)
         {
+            int PeerRetry = 0;
             BitArray bitArray = null;
 
             while (client.Connected)
@@ -220,11 +150,18 @@ namespace MyTorrentBackend.Services
                         case (byte)MessageTypes.MsgUnchoke:
                             if (bitArray != null)
                             {
-                                await SendPieceRequest(client,stream, bitArray);  //will call HandlePeerMessages
+                                int pieceIndex = GetFirstAvailablePiece(bitArray);
+                                if (pieceIndex != -1)
+                                {
+                                    await SendPieceRequest(stream, pieceIndex);
+                                }
                             }
                             break;
                         case (byte)MessageTypes.MsgPiece:
-                            await RecievePieceResponse(msgBuff);
+                            if (bitArray != null)
+                            {
+                                await RecievePieceResponse(stream, msgBuff, bitArray);
+                            }
                             break;
                         default:
                             break;
@@ -232,13 +169,28 @@ namespace MyTorrentBackend.Services
                 }
                 else
                 {
-                    // peerRetry++;
-                    await SendKeepAliveMsg(stream);
+                    PeerRetry++;
+                    //await SendKeepAliveMsg(stream);
                 }
             }
         }
 
-        private async Task RecievePieceResponse(byte[] msgBuff)
+        private int GetFirstAvailablePiece(BitArray bitArray)
+        {
+            if (bitArray.Count > 0)
+            {
+                for (int i = 0; i < bitArray.Count; i++)
+                {
+                    if (bitArray[i] == true && !pieces.ContainsKey(i))
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private async Task RecievePieceResponse(NetworkStream stream1, byte[] msgBuff, BitArray bitArray)
         {
             throw new NotImplementedException();
         }
@@ -248,27 +200,31 @@ namespace MyTorrentBackend.Services
             throw new NotImplementedException();
         }
 
-        private async Task SendPieceRequest(TcpClient client, NetworkStream stream, BitArray bitArray)
+        private async Task SendPieceRequest(NetworkStream stream, int PieceIndex)
         {
-            if (bitArray.Count > 0)
-            {
-                for (int i = 0; i < bitArray.Count; i++)
-                {
-                    if (bitArray[i] == true && !pieces.ContainsKey(i))
-                    {
-                        byte[] InterestedMsg = [(byte)MessageTypes.MsgRequest];
-                        byte[] payload = InterestedMsg
-                                                .Concat(BitConverter.GetBytes(i).Reverse()) //to BigEndian Network Order
-                                                .Concat(BitConverter.GetBytes(0).Reverse())
-                                                .Concat(BitConverter.GetBytes(16384).Reverse())
-                                                .ToArray();
+             const int blockSize = 16384; //16KB 
+             byte[] InterestedMsg = [(byte)MessageTypes.MsgRequest];
 
-                        byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
-                        await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
-                        await HandlePeerMessages(client,stream);
-                    }
-                }
-            }
+            // for (int i = 0; i < _torrentFile.PieceLength / blockSize; i++)
+            // {
+            //     byte[] payload = InterestedMsg
+            //                             .Concat(BitConverter.GetBytes(PieceIndex).Reverse()) //to BigEndian Network Order
+            //                             .Concat(BitConverter.GetBytes(i * blockSize).Reverse())
+            //                             .Concat(BitConverter.GetBytes(Math.Min(blockSize, _torrentFile.PieceLength - i)).Reverse())
+            //                             .ToArray();
+
+            //     byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
+            //     await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
+            //     break;
+            // }
+                byte[] payload = InterestedMsg
+                                        .Concat(BitConverter.GetBytes(PieceIndex).Reverse()) //to BigEndian Network Order
+                                        .Concat(BitConverter.GetBytes(0).Reverse())
+                                        .Concat(BitConverter.GetBytes(blockSize).Reverse())
+                                        .ToArray();
+
+                byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
+                await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
         }
 
         private BitArray ProcessBitfield(byte[] msgBuff)
