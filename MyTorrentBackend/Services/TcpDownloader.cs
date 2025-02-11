@@ -205,26 +205,25 @@ namespace MyTorrentBackend.Services
              const int blockSize = 16384; //16KB 
              byte[] InterestedMsg = [(byte)MessageTypes.MsgRequest];
 
-            // for (int i = 0; i < _torrentFile.PieceLength / blockSize; i++)
-            // {
-            //     byte[] payload = InterestedMsg
-            //                             .Concat(BitConverter.GetBytes(PieceIndex).Reverse()) //to BigEndian Network Order
-            //                             .Concat(BitConverter.GetBytes(i * blockSize).Reverse())
-            //                             .Concat(BitConverter.GetBytes(Math.Min(blockSize, _torrentFile.PieceLength - i)).Reverse())
-            //                             .ToArray();
-
-            //     byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
-            //     await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
-            //     break;
-            // }
+            for (int i = 0; i < _torrentFile.PieceLength / blockSize; i++)
+            {
                 byte[] payload = InterestedMsg
                                         .Concat(BitConverter.GetBytes(PieceIndex).Reverse()) //to BigEndian Network Order
-                                        .Concat(BitConverter.GetBytes(0).Reverse())
-                                        .Concat(BitConverter.GetBytes(blockSize).Reverse())
+                                        .Concat(BitConverter.GetBytes(i * blockSize).Reverse())
+                                        .Concat(BitConverter.GetBytes(Convert.ToInt32(Math.Min(blockSize, _torrentFile.PieceLength - i))).Reverse())
                                         .ToArray();
 
                 byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
                 await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
+            }
+                // byte[] payload = InterestedMsg
+                //                         .Concat(BitConverter.GetBytes(PieceIndex).Reverse()) //to BigEndian Network Order
+                //                         .Concat(BitConverter.GetBytes(0).Reverse())
+                //                         .Concat(BitConverter.GetBytes(blockSize).Reverse())
+                //                         .ToArray();
+
+                // byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
+                // await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
         }
 
         private BitArray ProcessBitfield(byte[] msgBuff)
