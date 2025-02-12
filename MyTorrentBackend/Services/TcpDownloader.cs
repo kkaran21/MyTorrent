@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
 using MyTorrentBackend.Dtos;
@@ -190,9 +191,48 @@ namespace MyTorrentBackend.Services
             return -1;
         }
 
-        private async Task RecievePieceResponse(NetworkStream stream1, byte[] msgBuff, BitArray bitArray)
+        private async Task RecievePieceResponse(NetworkStream stream, byte[] msgBuff, BitArray bitArray)
         {
-            throw new NotImplementedException();
+            int index = BitConverter.ToInt32(msgBuff.Skip(1).Take(4).Reverse().ToArray());
+            int offset = BitConverter.ToInt32(msgBuff.Skip(5).Take(4).Reverse().ToArray());
+
+            byte[] data = msgBuff.Skip(9).ToArray();
+            byte[] incompleteData;
+
+            if (Incompletepieces.ContainsKey(index))
+            {
+                incompleteData = Incompletepieces[index];
+            }
+            else
+            {
+                incompleteData = new byte[_torrentFile.PieceLength];
+            }
+
+            Array.Copy(data, 0, incompleteData, offset, data.Length);
+
+            Incompletepieces[index] = incompleteData;
+            if (_torrentFile.Pieces[index].SequenceEqual(SHA1.HashData(Incompletepieces[index])))
+            {
+                if(pieces.TryAdd(index, Incompletepieces[index]))
+                {
+                   Console.WriteLine($"piece {index} downloaded and added");     
+                }
+                else
+                {
+                   Console.WriteLine($"piece {index} downloaded but unable to add");     
+                }
+
+                if (bitArray != null)
+                {
+                    int pieceIndex = GetFirstAvailablePiece(bitArray);
+                    if (pieceIndex != -1)
+                    {
+                        await SendPieceRequest(stream, pieceIndex);
+                    }
+                }
+
+            }
+
         }
 
         private async Task SendKeepAliveMsg(NetworkStream stream)
@@ -202,8 +242,8 @@ namespace MyTorrentBackend.Services
 
         private async Task SendPieceRequest(NetworkStream stream, int PieceIndex)
         {
-             const int blockSize = 16384; //16KB 
-             byte[] InterestedMsg = [(byte)MessageTypes.MsgRequest];
+            const int blockSize = 16384; //16KB 
+            byte[] InterestedMsg = [(byte)MessageTypes.MsgRequest];
 
             for (int i = 0; i < _torrentFile.PieceLength / blockSize; i++)
             {
@@ -216,14 +256,6 @@ namespace MyTorrentBackend.Services
                 byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
                 await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
             }
-                // byte[] payload = InterestedMsg
-                //                         .Concat(BitConverter.GetBytes(PieceIndex).Reverse()) //to BigEndian Network Order
-                //                         .Concat(BitConverter.GetBytes(0).Reverse())
-                //                         .Concat(BitConverter.GetBytes(blockSize).Reverse())
-                //                         .ToArray();
-
-                // byte[] RequestBytes = BitConverter.GetBytes(payload.Length).Reverse().Concat(payload).ToArray();
-                // await stream.WriteAsync(RequestBytes, 0, RequestBytes.Length);
         }
 
         private BitArray ProcessBitfield(byte[] msgBuff)
