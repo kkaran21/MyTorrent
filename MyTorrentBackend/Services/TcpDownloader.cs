@@ -15,6 +15,7 @@ namespace MyTorrentBackend.Services
         private ConcurrentDictionary<int, byte[]> _completePieces;
         private Dictionary<int, byte[]> _incompletePieces;
         private ConcurrentQueue<int> _workQueue;
+        private ConcurrentQueue<string> _failedPeers = new ConcurrentQueue<string>();
 
         public TcpDownloader(TorrentFile torrentFile, IMapper mapper)
         {
@@ -39,6 +40,20 @@ namespace MyTorrentBackend.Services
             }
 
             await Task.WhenAll(handshakeTask);
+
+            List<Task> IncompletedTasks = new List<Task>();
+
+            while (_completePieces.Count != _torrentFile.Pieces.Count)
+            {
+                foreach (var item in _failedPeers)
+                {
+                    IncompletedTasks.Add(DownloadPieces(item));
+                    Console.WriteLine($"task started for {item}");
+                }
+                await Task.WhenAll(IncompletedTasks);
+
+            }
+
             return;
         }
 
@@ -96,6 +111,7 @@ namespace MyTorrentBackend.Services
 
                 if (isHandshakeSuccess)
                 {
+                    Console.WriteLine("peer connected");
                     await HandlePeerMessages(client, stream);
                 }
 
@@ -103,18 +119,31 @@ namespace MyTorrentBackend.Services
             // Timeout reached
             catch (OperationCanceledException e)
             {
+                _failedPeers.Enqueue(peerIp);
                 // Do something in case of a timeout
             }
             // Network-related error
             catch (SocketException e)
             {
+                _failedPeers.Enqueue(peerIp);
+
                 // Do something about other communication issues
             }
             // Some argument-related error, disposed object, ...
             catch (Exception e)
             {
+                _failedPeers.Enqueue(peerIp);
+
                 // Do something about other errors
             }
+            // catch (ArgumentException e)
+            // {
+            //     // Do something about other errors
+            // }
+            // catch (OutOfMemoryException e)
+            // {
+
+            // }
 
         }
 
@@ -133,52 +162,69 @@ namespace MyTorrentBackend.Services
         {
             int PeerRetry = 0;
             BitArray bitArray = null;
+            int pieceIndex = -1;
 
-            while (client.Connected)
+            try
             {
-                byte[] lengthBuff = new byte[4];
-                await stream.ReadAsync(lengthBuff, 0, lengthBuff.Length);
-                Array.Reverse(lengthBuff);
-                int msgSize = BitConverter.ToInt32(lengthBuff, 0);
-
-                if (msgSize > 0)
+                while (client.Connected)
                 {
-                    byte[] msgBuff = new byte[msgSize];
-                    await stream.ReadAsync(msgBuff, 0, msgBuff.Length);
+                    byte[] lengthBuff = new byte[4];
+                    await stream.ReadAsync(lengthBuff, 0, lengthBuff.Length);
+                    Array.Reverse(lengthBuff);
+                    int msgSize = BitConverter.ToInt32(lengthBuff, 0);
 
-                    switch (msgBuff.FirstOrDefault())
+                    if (msgSize > 0)
                     {
-                        case (byte)MessageTypes.MsgBitfield:
-                            bitArray = ProcessBitfield(msgBuff);
-                            await SendInterestedMsg(stream);
-                            break;
-                        case (byte)MessageTypes.MsgUnchoke:
-                            if (bitArray != null)
-                            {
-                                int pieceIndex = GetWork(bitArray);
-                                if (pieceIndex != -1)
+                        byte[] msgBuff = new byte[msgSize];
+                        await stream.ReadAsync(msgBuff, 0, msgBuff.Length);
+
+                        switch (msgBuff.FirstOrDefault())
+                        {
+                            case (byte)MessageTypes.MsgBitfield:
+                                bitArray = ProcessBitfield(msgBuff);
+                                await SendInterestedMsg(stream);
+                                break;
+                            case (byte)MessageTypes.MsgUnchoke:
+                                if (bitArray != null)
                                 {
-                                    await SendPieceRequest(stream, pieceIndex);
+                                    pieceIndex = GetWork(bitArray);
+                                    if (pieceIndex != -1)
+                                    {
+                                        await SendPieceRequest(stream, pieceIndex);
+                                    }
                                 }
-                            }
-                            break;
-                        case (byte)MessageTypes.MsgPiece:
-                            if (bitArray != null)
-                            {
-                                await RecievePieceResponse(stream, msgBuff, bitArray);
-                            }
-                            break;
-                        default:
-                            break;
+                                break;
+                            case (byte)MessageTypes.MsgPiece:
+                                if (bitArray != null)
+                                {
+                                    await RecievePieceResponse(stream, msgBuff, bitArray);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        PeerRetry++;
+                        //await SendKeepAliveMsg(stream);
                     }
                 }
-                else
-                {
-                    PeerRetry++;
-                    //await SendKeepAliveMsg(stream);
-                }
             }
+            catch (SocketException e)
+            {
+                _workQueue.Enqueue(pieceIndex);
+                // Do something about other communication issues
+            }
+            // Some argument-related error, disposed object, ...
+            catch (Exception e)
+            {
+                _workQueue.Enqueue(pieceIndex);
+                // Do something about other errors
+            }
+
         }
+
 
         private BitArray ProcessBitfield(byte[] msgBuff)
         {
@@ -261,8 +307,6 @@ namespace MyTorrentBackend.Services
 
             _incompletePieces[index] = incompleteData;
 
-            // if (offset == finalOffset)
-            // {
             if (_torrentFile.Pieces[index].SequenceEqual(SHA1.HashData(_incompletePieces[index])))
             {
                 if (_completePieces.TryAdd(index, _incompletePieces[index]))
