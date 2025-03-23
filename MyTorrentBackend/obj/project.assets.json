@@ -624,24 +624,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\KARAN\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\khadk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\KARAN\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+      "projectUniqueName": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
       "projectName": "MyTorrentBackend",
-      "projectPath": "C:\\Users\\KARAN\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
-      "packagesPath": "C:\\Users\\KARAN\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\KARAN\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
+      "projectPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\MyTorrentBackend.csproj",
+      "packagesPath": "C:\\Users\\khadk\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\khadk\\OneDrive\\Desktop\\MyTorrent\\MyTorrentBackend\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\KARAN\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\khadk\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -667,8 +662,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.200"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -702,7 +696,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
